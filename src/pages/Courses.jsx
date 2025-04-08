@@ -586,7 +586,7 @@ const Courses = () => {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className={`px-6 py-4 text-black rounded-xl border-2 ${theme.border} ${theme.background} ${theme.text.primary} min-w-[200px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg`}
+              className={`px-6 py-4 text-black rounded-xl border-2 ${theme.border} ${theme.background} min-w-[200px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg`}
             >
               <option value="all">All Courses</option>
               <option value="active">Active Courses</option>
