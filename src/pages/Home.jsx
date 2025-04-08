@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaGraduationCap, FaCertificate,FaClock, FaRobot, FaArrowRight, FaPlay, FaChalkboardTeacher, FaUserGraduate, FaAward, FaCheck, FaTasks, FaRocket, FaBrain, FaLightbulb, FaUsers, FaGlobe, FaShieldAlt, FaStar } from 'react-icons/fa';
+import { FaGraduationCap, FaCertificate, FaClock, FaRobot, FaArrowRight, FaPlay, FaChalkboardTeacher, FaUserGraduate, FaAward, FaCheck, FaTasks, FaRocket, FaBrain, FaLightbulb, FaUsers, FaGlobe, FaShieldAlt, FaStar, FaFingerprint } from 'react-icons/fa';
 import WalletConnect from '../components/WalletConnect';
+// import OCIDGenerator from '../components/OCIDGenerator'; // Import the new component
 import Aurora from './Aurora';
 import { useTheme } from '../context/ThemeContext';
 import { motion } from 'framer-motion';
@@ -17,9 +18,44 @@ const Home = () => {
     setIsVisible(true);
   }, []);
 
+  // Check for previously connected wallet on component mount
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      try {
+        // This would be replaced with your actual wallet connection check logic
+        const savedAccount = localStorage.getItem('connected_account');
+        if (savedAccount) {
+          setConnectedAccount(savedAccount);
+        }
+      } catch (error) {
+        console.error("Error checking wallet connection:", error);
+      }
+    };
+    
+    checkWalletConnection();
+  }, []);
+
+  // Save connected account to local storage when it changes
+  useEffect(() => {
+    if (connectedAccount) {
+      localStorage.setItem('connected_account', connectedAccount);
+    }
+  }, [connectedAccount]);
+
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
+  };
+
+  // Handle wallet connection
+  const handleWalletConnect = (address) => {
+    setConnectedAccount(address);
+  };
+
+  // Handle wallet disconnection
+  const handleWalletDisconnect = () => {
+    setConnectedAccount('');
+    localStorage.removeItem('connected_account');
   };
 
   const featuredCourses = [
@@ -33,7 +69,6 @@ const Home = () => {
     {
       title: "Web Development with React Js",
       image: "./react.png",
-      // image: "https://images.unsplash.com/photo-1639322537504-6427a16b0a28?q=80&w=1000",
       students: "300+",
       rating: 4.9,
       duration: "10 weeks"
@@ -50,7 +85,8 @@ const Home = () => {
   const heroFeatures = [
     { icon: <FaRocket />, text: "Learn at your pace" },
     { icon: <FaBrain />, text: "AI-powered mentoring" },
-    { icon: <FaShieldAlt />, text: "Verified certificates" }
+    { icon: <FaShieldAlt />, text: "Verified certificates" },
+    { icon: <FaFingerprint />, text: "On-Chain Identity" } // Added OCID feature
   ];
 
   const platformStats = [
@@ -152,7 +188,20 @@ const Home = () => {
               className="flex flex-col sm:flex-row gap-4"
               variants={fadeIn}
             >
-              {!connectedAccount && <WalletConnect onConnect={setConnectedAccount} />}
+              {!connectedAccount ? (
+                <WalletConnect onConnect={handleWalletConnect} />
+              ) : (
+                <button
+                  onClick={handleWalletDisconnect}
+                  className={`px-8 py-4 rounded-xl ${
+                    darkMode 
+                      ? 'bg-gray-800 hover:bg-gray-700' 
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  } text-sm font-medium transition-colors duration-200`}
+                >
+                  Disconnect Wallet
+                </button>
+              )}
               <Link
                 to="/courses"
                 className={`group relative px-8 py-4 rounded-xl overflow-hidden ${
@@ -202,12 +251,16 @@ const Home = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - Enhanced Visual */}
+          {/* Right Column - Enhanced Visual with OCID Generator */}
           <motion.div 
             className="relative"
             variants={fadeIn}
           >
-            <div className="relative z-10">
+            <div className="relative z-10 grid gap-6">
+              {/* OCID Generator Card */}
+              {/* <OCIDGenerator connectedAccount={connectedAccount} /> */}
+              
+              {/* Dashboard Preview */}
               <img
                 src="https://i.ibb.co/tPc53Kjq/dashboard.png"
                 alt="Blockchain Education Platform"
